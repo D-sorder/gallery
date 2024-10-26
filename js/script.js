@@ -4,27 +4,47 @@ const btn = document.querySelector(".gallery-heading__btn");
 const loader = document.querySelector(".loader");
 const loaderImg = document.querySelector(".loader__img");
 let rotationSpeed = 2;
+let loaderInterval;
+
+function rotation() {
+    loaderImg.style.transform = "rotate(" + rotationSpeed + "deg)";
+    rotationSpeed += 2;
+}
 
 btn.addEventListener("click", async ()=>{
     gallery.classList.add("active");
-    await fetch(URL)
-        .then(async (response) => await response.json())
-        .then((data) => {
-            loader.classList.add("active");
-            //if (loaderImg) rotation();
-            data.forEach((image) => {
-                setTimeout(()=>{
-                    let imageURL = image.url;
-                    let img = `
-                    <div class="gallery__item">
-                        <img src="${imageURL}" alt="Изображение котека"
-                    </div>`;
-                    gallery.insertAdjacentHTML("beforeend", img); 
-                }, 0);
+    loader.classList.add("active");
+    loaderInterval = setInterval(rotation, 10);
+
+    try {
+        const response = await fetch(URL);
+        const data = await response.json();
+        
+        const imageLoadPromises = data.map((image) => {
+            return new Promise((resolve) => {
+                let imgElement = document.createElement("img");
+                imgElement.src = image.url;
+                imgElement.alt = "РР·РѕР±СЂР°Р¶РµРЅРёРµ РєРѕС‚РµРєР°";
+                imgElement.classList.add("gallery__item");
+
+                imgElement.onload = resolve;
+                
+                let imgContainer = document.createElement("div");
+                imgContainer.classList.add("gallery__item");
+                imgContainer.appendChild(imgElement);
+                
+                gallery.appendChild(imgContainer);
             });
-        })
-        .catch((err) => console.error("error:", err))
-        .finally(setTimeout(() => loader.classList.remove("active"), 2000));
+        });
+
+        await Promise.all(imageLoadPromises);
+
+    } catch (err) {
+        console.error("error:", err);
+    } finally {
+        loader.classList.remove("active");
+        clearInterval(loaderInterval);
+    }
 });
 
 // function rotation() {
