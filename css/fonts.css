@@ -1,0 +1,6 @@
+@font-face {
+    font-family: "Duality";
+    src: local("Duality"), url("../fonts/Duality.otf") format("OpenType");
+    font-weight: normal;
+    font-style: normal;
+}
