@@ -148,7 +148,7 @@ h1 {
     z-index: 100;
 }
 
-.loader.activee {
+.loader.active {
     display: flex;
     justify-content: center;
 }
